@@ -52,6 +52,49 @@ PAGE5为发布页
 配置好 Token 后，若仓库不存在会尝试创建；Pages 需在仓库设置里指向 gh-pages 分支 等（若 API 未成功打开 Pages，需在 GitHub 网页里手动开一次）。
 
 ---
+##算法与实现：
+
+2. 多向轴模式（MULTI_AXIS）
+输入：answers: dict[question_id → int]，取值为题目选项的 Likert 分值（与 QuestionOption.value 一致，如 -2…2）。
+
+（1）轴上得分（加权累加 + 按理论最大归一化）
+对每题主加载轴 primary_axis_id 加上完整答题值 ans；对 weak_axes 再按系数做侧向加载：ans * coefficient。
+每轴维护 max_possible（主贡献每题 +2 的容量，弱轴为 2 * |coefficient|），最后：
+normalized[a] = clip(raw[a] / max_possible[a], -1, 1)
+得到每条轴上的 [-1, 1] 连续向量（与 compute_dimension_scores 实现一致）。
+
+（2）普通结果（离散原型匹配）
+每个 NormalResult 带 dimension_combo: axis_id → {+1|-1}，可视为在超正交子空间上的符号原型。
+在 map_normal_result 中用余弦相似度比较用户连续向量与该离散方向向量，取相似度最大的普通结果（实现为 _cosine_similarity）。
+
+（3）稀有结果（门槛 + 特殊题计数 + 类型合并策略）
+check_rare_results 对每条 RareResult：
+
+先判 阈值条件：各轴上 dimension_scores[axis] * direction >= threshold 全部满足（与方向一致的“够极端”）。
+再统计 关联特殊题：is_special 且 linked_rare_id 匹配的题目中，答案满足 |ans| >= 1 的个数 ≥ min_special_hits。
+score_test 中对所有触发的稀有项：覆盖型写入 override_result_id/name（后触发的会覆盖前者）；附加型只追加到 rare_tags 名称列表。展示层通常以覆盖结果为最终主结果。
+
+3. 多维度模式（MULTI_DIM）
+输入：answers: dict[question_id → option_index]（0-based）。
+
+（1）维度得分（选项 effects 累加 + 按绝对贡献归一化）
+每个选项有 effects: dimension_id → int（设计约定约在 [-2, 2] 档位）。对选中选项，将各 val 累加到 raw[dim]，同时将 |val| 累加到 max_abs[dim]，再：
+$$
+\mathrm{normalized}[d] = \mathrm{clip}\left(\frac{\mathrm{raw}[d]}{\mathrm{max\_abs}[d]}, -1, 1\right)
+$$
+（无贡献则分为 0。）这与多轴「按理论上限缩放」是同一类 有界归一化，但分母来自本题选中选项的 L1 型贡献上限累加，而非固定每题 ±2。
+
+（2）原型（Archetype）匹配
+ResultArchetype.vector 为 dimension_id → float（目标亦为 [-1,1] 语义）。match_archetype 对用户归一化向量与每个原型向量做余弦相似度，取 argmax。
+
+（3）稀有标签
+check_rare_tags 先根据特殊题构造 cluster_hits（按 special_cluster 聚类，选项 effects 中存在 |v| >= 1 则计命中）。
+每条 RareTag 的 rules 按 gate（all / any）组合规则：dimension_min/max、special_cluster_min_hits 等，全部/任一满足则触发。与多轴「覆盖/附加」不同，这里是标签列表，不改变主原型 ID。
+
+4. 静态导出与运行时等价性
+_flatten_project 只嵌入前端需要的字段（轴/维度、题目、结果、稀有规则等），路径在静态导出时改为 images/...。
+前端用同一套数值管道算分，才能保证 「编辑器预览 / 导出站 / Python score_*」 结论一致。注意：扁平 JSON 可能省略部分仅用于编辑的元数据；多轴弱轴若未完整导出，会与完整 TestProject 存在细微偏差——因此离线分析优先用完整项目 JSON（你们模拟脚本的设计理由与此一致）。
+
 
 ## 技术栈
 
