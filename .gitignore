@@ -1,0 +1,22 @@
+# 虚拟环境与缓存
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+#密钥与本地配置（请使用 config.example.yaml）
+config.yaml
+
+# IDE.idea/
+.vscode/
+
+# 本地生成与自动保存（可选：若需备份项目 JSON 可改为仅忽略 _autosave）
+output/
+projects/_autosave.json
+projects/_recent.json
+projects/images/
+
+# 参考用克隆仓库
+sbti_for_reference/

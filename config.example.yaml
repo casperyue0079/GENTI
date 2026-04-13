@@ -1,0 +1,12 @@
+# 复制本文件为 config.yaml 并填写真实配置（config.yaml 勿提交到 Git）
+
+ai:
+  # 兼容 OpenAI API 的服务地址（如官方、代理或 Gemini OpenAI 兼容端点）
+  base_url: "https://api.openai.com/v1"
+  api_key: "sk-你的密钥"
+  model: "gpt-4o-mini"
+
+github:
+  # 发布静态站到 GitHub Pages 时使用（需具备仓库写入与 Pages 配置权限）
+  token: "ghp_你的令牌"
+  repo: "my-personality-test"
