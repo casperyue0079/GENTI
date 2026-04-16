@@ -1,0 +1,191 @@
+1. 环境准备
+
+在运行项目之前，请先安装好 Python，并确保你可以打开系统终端。
+
+1.1 安装 Python
+
+建议安装 Python 3.10 及以上版本。
+
+Windows
+打开 Python 官网下载页面
+下载适用于 Windows 的最新稳定版安装包
+运行安装程序时，务必勾选 Add Python to PATH
+安装完成后，打开终端并执行：
+python --version
+
+如果终端返回类似下面的结果，说明安装成功：
+
+Python 3.11.8
+macOS
+
+macOS 自带的 Python 一般不建议直接用于项目开发，建议安装新版 Python。
+
+你可以选择以下任意一种方式：
+
+方式一：从 Python 官网下载安装包
+
+安装完成后，在终端执行：
+
+python3 --version
+
+方式二：使用 Homebrew 安装
+
+brew install python
+
+安装完成后执行：
+
+python3 --version
+
+如果看到 Python 版本号，说明安装成功。
+
+1.2 打开终端
+Windows
+
+可以使用以下任意一种方式打开终端：
+
+按 Win + R，输入 cmd，打开命令提示符
+在开始菜单搜索 PowerShell
+在开始菜单搜索 Windows Terminal
+
+推荐优先使用 PowerShell 或 Windows Terminal。
+
+macOS
+按 Command + Space 打开 Spotlight 搜索
+输入 Terminal
+按回车打开终端
+2. 克隆仓库
+
+在终端中进入你希望存放项目的目录，然后执行：
+
+git clone https://github.com/casperyue0079/GENTI.git
+cd GENTI
+
+如果系统提示找不到 git 命令，说明你尚未安装 Git，需要先安装 Git 再继续。
+
+3. 创建虚拟环境并安装依赖
+
+建议在项目目录中创建独立的虚拟环境。
+
+3.1 创建虚拟环境
+Windows
+python -m venv .venv
+macOS
+python3 -m venv .venv
+3.2 激活虚拟环境
+Windows
+.venv\Scripts\activate
+macOS / Linux
+source .venv/bin/activate
+
+激活成功后，终端前面通常会显示 (.venv)。
+
+3.3 安装依赖
+pip install -r requirements.txt
+
+如果在 macOS 中 pip 不可用，可以尝试：
+
+pip3 install -r requirements.txt
+4. 配置 API
+
+先复制配置文件模板：
+
+Windows
+copy config.example.yaml config.yaml
+macOS / Linux
+cp config.example.yaml config.yaml
+
+然后打开 config.yaml，填写以下配置项：
+
+ai.base_url
+ai.api_key
+ai.model
+
+这里需要填写你实际使用的、兼容 OpenAI API 格式 的服务信息。
+
+5. 启动应用
+
+在项目根目录执行：
+
+streamlit run app.py
+
+如果 streamlit 命令无法直接使用，可以尝试：
+
+Windows
+python -m streamlit run app.py
+macOS
+python3 -m streamlit run app.py
+
+启动成功后，浏览器访问终端中显示的本地地址，通常为：
+
+http://localhost:8501
+6. 可选：发布到 GitHub Pages
+
+如果你希望将生成结果发布到 GitHub Pages，需要先在 config.yaml 中配置 github 段，包括：
+
+Personal Access Token
+目标仓库名
+
+然后在应用中的 步骤 5 执行以下操作：
+
+先 导出静态文件
+再执行 发布
+
+注意：
+
+发布前，程序会根据当前项目内容重新写入 output/
+Token 需要具备对应仓库的内容写入权限
+Token 还需要具备 GitHub Pages 相关配置权限
+7. 常见问题
+7.1 无法识别 python 命令
+Windows
+
+通常是因为安装 Python 时没有勾选 Add Python to PATH。
+建议重新安装 Python，并确保勾选该选项。
+
+macOS
+
+请优先尝试使用：
+
+python3 --version
+
+以及：
+
+python3 -m venv .venv
+7.2 无法识别 pip 命令
+
+可以尝试：
+
+python -m pip install -r requirements.txt
+
+或在 macOS 下使用：
+
+python3 -m pip install -r requirements.txt
+7.3 无法识别 streamlit 命令
+
+可以改用以下方式启动：
+
+Windows
+python -m streamlit run app.py
+macOS
+python3 -m streamlit run app.py
+7.4 浏览器没有自动打开
+
+应用启动后，终端中会显示一个本地访问地址。
+你可以手动复制该地址到浏览器中打开，通常是：
+
+http://localhost:8501
+8. 快速开始
+
+如果你已经装好了 Python 和 Git，可以直接按下面步骤执行：
+
+git clone https://github.com/casperyue0079/GENTI.git
+cd GENTI
+python -m venv .venv
+
+激活虚拟环境后：
+
+pip install -r requirements.txt
+copy config.example.yaml config.yaml
+streamlit run app.py
+
+macOS 用户请将 python 替换为 python3，将 copy 替换为 cp。
